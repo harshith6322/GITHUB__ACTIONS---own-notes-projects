@@ -1,0 +1,25 @@
+name: Send Email on Failure
+
+on:
+  workflow_run: 
+    workflows: ["Build"]
+    types: [completed]
+
+
+
+jobs:
+  email:
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send email
+        uses: dawidd6/action-send-mail@v4
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: "❌ Build Failed"
+          to: "user@example.com"
+          from: "GitHub Actions <noreply@example.com>"
+          body: "The build workflow failed. Check logs."
